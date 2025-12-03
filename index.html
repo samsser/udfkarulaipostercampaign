@@ -89,12 +89,12 @@
                             </div>
                         </div>
 
-                        <!-- NEW: Internal Controls Overlay (Hidden by default) -->
-                        <div id="internalControls" class="absolute bottom-0 left-0 right-0 p-3 bg-white/90 backdrop-blur-sm border-t border-gray-200 hidden transition-all duration-300">
+                        <!-- INTERNAL CONTROLS OVERLAY (More Compact & Transparent) -->
+                        <div id="internalControls" class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-white/70 backdrop-blur-md border-t border-white/20 hidden transition-all duration-300">
                             <div class="flex items-center justify-between gap-3">
                                 <!-- Zoom Controls -->
                                 <div class="flex items-center gap-2 flex-1">
-                                    <i data-lucide="zoom-out" width="16" class="text-gray-500"></i>
+                                    <i data-lucide="zoom-out" width="14" class="text-gray-600"></i>
                                     <input 
                                         type="range" 
                                         id="scaleInput"
@@ -102,14 +102,14 @@
                                         max="3" 
                                         step="0.1" 
                                         value="1" 
-                                        class="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                        class="w-full h-1 bg-gray-400/50 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                                     />
-                                    <i data-lucide="zoom-in" width="16" class="text-gray-500"></i>
+                                    <i data-lucide="zoom-in" width="14" class="text-gray-600"></i>
                                 </div>
                                 
-                                <!-- Reset Button (Icon only to save space) -->
-                                <button id="resetBtn" class="p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 active:bg-indigo-200 transition-colors" title="Reset Position">
-                                    <i data-lucide="refresh-cw" width="16" height="16"></i>
+                                <!-- Reset Button -->
+                                <button id="resetBtn" class="p-1.5 bg-white/80 text-indigo-600 rounded-full shadow-sm hover:bg-white active:bg-indigo-50 transition-colors" title="Reset Position">
+                                    <i data-lucide="refresh-cw" width="14" height="14"></i>
                                 </button>
                             </div>
                         </div>
