@@ -9,14 +9,8 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Prevent pull-to-refresh on mobile */
-        body {
-            overscroll-behavior-y: contain;
-        }
-        /* Lock canvas interactions */
-        canvas {
-            touch-action: none;
-        }
+        /* Removed overscroll-behavior to make scrolling feel natural */
+        
         /* Hide scrollbar for cleaner look */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -25,9 +19,14 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        
+        /* Smooth transitions */
+        .transition-all-300 {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans pb-24 md:pb-0">
+<body class="bg-gray-50 text-gray-800 font-sans pb-32 md:pb-0">
 
     <!-- Header -->
     <header class="bg-white shadow-sm p-3 sticky top-0 z-30">
@@ -49,31 +48,8 @@
     <main class="max-w-4xl mx-auto md:p-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           
-            <!-- Preview Section (Moved to Bottom on Mobile) -->
-            <div class="order-2 md:order-2 md:sticky md:top-24 z-20 bg-gray-50 md:bg-transparent pt-2 md:pt-0 pb-2 px-2 md:px-0">
-                <div class="bg-white p-2 md:p-4 rounded-2xl shadow-lg border border-gray-200">
-                    <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-move touch-none border border-gray-100">
-                        <canvas id="posterCanvas" class="w-full h-full object-contain"></canvas>
-                        
-                        <!-- Placeholder Text -->
-                        <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div class="text-center p-6 opacity-40">
-                                <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
-                                <p class="text-sm">Tap "Upload" above</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Label for mobile -->
-                <div class="mt-4 text-center md:hidden">
-                    <p class="text-sm font-medium text-gray-500">
-                        Generated Poster Preview
-                    </p>
-                </div>
-            </div>
-
-            <!-- Controls Section (Moved to Top on Mobile) -->
-            <div class="space-y-4 px-4 md:px-0 order-1 md:order-1 pb-8">
+            <!-- Controls Section (Top on Mobile) -->
+            <div class="space-y-4 px-4 md:px-0 order-1 md:order-1 pt-4 md:pt-0">
                 
                 <!-- 1. Upload Section -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
@@ -133,6 +109,28 @@
                             <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">Election</p>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Preview Section (Bottom on Mobile) -->
+            <div class="order-2 md:order-2 md:sticky md:top-24 z-20 px-4 md:px-0 pb-4">
+                <div class="bg-white p-3 md:p-4 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                        <!-- Canvas with dynamic touch-action -->
+                        <canvas id="posterCanvas" class="w-full h-full object-contain" style="touch-action: auto;"></canvas>
+                        
+                        <!-- Placeholder Text -->
+                        <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="text-center p-6 opacity-40">
+                                <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
+                                <p class="text-sm">Tap "Upload" above to start</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Label for mobile -->
+                <div class="mt-4 text-center md:hidden text-gray-400 text-xs">
+                    Generated Poster Preview
                 </div>
             </div>
 
@@ -263,6 +261,9 @@
                         placeholderText.style.display = 'none';
                         controlsSection.classList.remove('hidden');
                         
+                        // LOCK SCROLLING ON CANVAS ONLY AFTER IMAGE LOAD
+                        canvas.style.touchAction = "none";
+                        
                         // Enable Desktop Button
                         desktopDownloadBtn.disabled = false;
                         desktopDownloadBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
@@ -308,18 +309,15 @@
         // 7. Pan / Drag Logic
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            // Calculate scale based on displayed size vs actual canvas size
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
 
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // We need to scale the movement to match the canvas resolution
             return { x: clientX * scaleX, y: clientY * scaleY };
         }
 
-        // Improved Drag Logic for Mobile Smoothness
         let lastPos = { x: 0, y: 0 };
 
         const startDrag = (e) => {
@@ -330,11 +328,10 @@
         };
 
         const onDrag = (e) => {
-            if (!isDragging) return;
-            e.preventDefault(); // Stop scrolling
+            if (!isDragging || !uploadedImage) return;
+            e.preventDefault(); // Stop scrolling only if dragging an image
             const pos = getPos(e);
             
-            // Calculate delta
             const dx = pos.x - lastPos.x;
             const dy = pos.y - lastPos.y;
 
@@ -357,6 +354,7 @@
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
+        // Initial Draw
         drawCanvas();
 
     </script>
