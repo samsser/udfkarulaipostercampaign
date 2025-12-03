@@ -49,16 +49,9 @@
                     <i data-lucide="smartphone" class="text-indigo-500" width="18"></i>
                     1. Choose Campaign
                 </h2>
-                <div class="grid grid-cols-3 gap-2">
-                    <!-- Updated Button with Image Thumbnail -->
-                    <button class="p-2 rounded-xl border-2 transition-all border-indigo-600 bg-indigo-50">
-                        <img 
-                            src="https://raw.githubusercontent.com/samsser/udfkarulaipostercampaign/77bad7ec64cd0e7b4868dc28c43b528432da2949/1.png" 
-                            class="w-full h-10 md:h-12 object-contain rounded-md mb-1.5" 
-                            alt="UDF Frame"
-                        >
-                        <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">UDF Karulai</p>
-                    </button>
+                <!-- Dynamic Grid for Frames -->
+                <div id="campaignGrid" class="grid grid-cols-3 gap-2">
+                    <!-- Buttons will be injected here by JS -->
                 </div>
             </div>
 
@@ -137,18 +130,64 @@
         let scale = 1;
         let isDragging = false;
         let dragStart = { x: 0, y: 0 };
-
-        // Frame Configuration
-        // Using 'raw.githubusercontent.com' to serve the image directly
-        const FRAME_URL = "https://raw.githubusercontent.com/samsser/udfkarulaipostercampaign/77bad7ec64cd0e7b4868dc28c43b528432da2949/1.png";
         
-        // Preload Frame Image
+        // --- FRAME LOGIC START ---
+        
+        // 1. Define Available Frames
+        const frames = [
+            {
+                id: 1,
+                name: "UDF Karulai",
+                image: "https://raw.githubusercontent.com/samsser/udfkarulaipostercampaign/5d5b2e554b416316fbb1f5aae8a2d799a3c984fe/3.png"
+            }
+            // Add more frames here easily in future
+        ];
+
+        let currentFrameIndex = 0;
         const frameImage = new Image();
-        frameImage.crossOrigin = "anonymous"; // Important for canvas export
-        frameImage.src = FRAME_URL;
+        frameImage.crossOrigin = "anonymous";
+        
+        // 2. Render Campaign Buttons
+        const campaignGrid = document.getElementById('campaignGrid');
+        
+        function renderCampaigns() {
+            campaignGrid.innerHTML = '';
+            frames.forEach((frame, index) => {
+                const btn = document.createElement('button');
+                const isActive = index === currentFrameIndex;
+                
+                // Button Styling
+                btn.className = `p-2 rounded-xl border-2 transition-all ${
+                    isActive ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-gray-300'
+                }`;
+                
+                btn.innerHTML = `
+                    <img src="${frame.image}" class="w-full h-10 md:h-12 object-contain rounded-md mb-1.5 pointer-events-none">
+                    <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900 pointer-events-none">${frame.name}</p>
+                `;
+                
+                btn.onclick = () => changeFrame(index);
+                campaignGrid.appendChild(btn);
+            });
+        }
+
+        // 3. Change Frame Logic
+        function changeFrame(index) {
+            currentFrameIndex = index;
+            renderCampaigns(); // Re-render to update active state
+            
+            // Load new frame image
+            frameImage.src = frames[index].image;
+        }
+
+        // Initial Load
         frameImage.onload = () => {
-            if(uploadedImage) drawCanvas(); // Redraw if user image is already there
+             drawCanvas();
         };
+        frameImage.src = frames[0].image; // Load first frame default
+        renderCampaigns();
+
+        // --- FRAME LOGIC END ---
 
         const canvas = document.getElementById('posterCanvas');
         const ctx = canvas.getContext('2d');
@@ -191,10 +230,9 @@
                 ctx.textAlign = "center";
                 ctx.fillText("Upload Photo", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
             }
-            ctx.restore(); // Remove clip so frame draws fully (if needed) or keep if frame is also circular
+            ctx.restore(); 
 
-            // 3. Draw Frame Overlay (The PNG from GitHub)
-            // We draw this ON TOP of the clipped user photo
+            // 3. Draw Selected Frame Overlay
             if (frameImage.complete && frameImage.naturalHeight !== 0) {
                 ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
             }
@@ -245,7 +283,7 @@
         const downloadImage = () => {
             if (!uploadedImage) return;
             const link = document.createElement('a');
-            link.download = 'my-udf-poster.png';
+            link.download = `campaign-poster-${frames[currentFrameIndex].name.replace(/\s+/g, '-').toLowerCase()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         };
@@ -300,8 +338,6 @@
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
-        // Initial draw (in case frame loads fast)
-        drawCanvas();
     </script>
 </body>
 </html>
