@@ -9,20 +9,12 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Removed overscroll-behavior to make scrolling feel natural */
-        
-        /* Hide scrollbar for cleaner look */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
-        }
-        
-        /* Smooth transitions */
-        .transition-all-300 {
-            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -45,92 +37,85 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+    <main class="max-w-4xl mx-auto md:p-8 pt-4">
+        <!-- Grid Container -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 px-4 md:px-0">
           
-            <!-- Controls Section (Top on Mobile) -->
-            <div class="space-y-4 px-4 md:px-0 order-1 md:order-1 pt-4 md:pt-0">
-                
-                <!-- 1. Upload Section -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
-                        <i data-lucide="image" class="text-indigo-500" width="18"></i>
-                        1. Upload Photo
-                    </h2>
-                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-indigo-200 rounded-xl cursor-pointer bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 transition-colors">
-                        <div class="flex flex-col items-center justify-center">
-                            <i data-lucide="upload" class="w-6 h-6 mb-1 text-indigo-500"></i>
-                            <p class="text-xs text-gray-500 font-medium">Tap to upload image</p>
-                        </div>
-                        <input type="file" id="imageInput" class="hidden" accept="image/*" />
-                    </label>
-                </div>
-
-                <!-- 2. Controls Section (Hidden initially) -->
-                <div id="controlsSection" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hidden">
-                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
-                        <i data-lucide="move" class="text-indigo-500" width="18"></i>
-                        2. Adjust Image
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="zoom-out" width="18" class="text-gray-400"></i>
-                            <input 
-                                type="range" 
-                                id="scaleInput"
-                                min="0.1" 
-                                max="3" 
-                                step="0.1" 
-                                value="1" 
-                                class="w-full h-8 bg-transparent cursor-pointer accent-indigo-600 touch-pan-x"
-                            />
-                            <i data-lucide="zoom-in" width="18" class="text-gray-400"></i>
-                        </div>
-                        <p class="text-xs text-center text-gray-400">
-                            Drag image on preview to move • Use slider to zoom
-                        </p>
-                        <button id="resetBtn" class="w-full py-2.5 text-sm text-indigo-600 bg-indigo-50 rounded-lg active:bg-indigo-100 flex items-center justify-center gap-2">
-                            <i data-lucide="refresh-cw" width="14"></i> Reset Position
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 3. Frame Selection -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
-                        <i data-lucide="smartphone" class="text-indigo-500" width="18"></i>
-                        3. Campaign
-                    </h2>
-                    <div class="grid grid-cols-3 gap-2">
-                        <!-- Only Election Campaign -->
-                        <button class="p-2 rounded-xl border-2 transition-all border-indigo-600 bg-indigo-50">
-                            <div class="w-full h-10 md:h-12 rounded-md mb-1.5" style="background-color: #2563eb;"></div>
-                            <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">Election</p>
-                        </button>
-                    </div>
+            <!-- 1. Campaign Selection (First Priority) -->
+            <div class="order-1 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                    <i data-lucide="smartphone" class="text-indigo-500" width="18"></i>
+                    1. Choose Campaign
+                </h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <button class="p-2 rounded-xl border-2 transition-all border-indigo-600 bg-indigo-50">
+                        <div class="w-full h-10 md:h-12 rounded-md mb-1.5" style="background-color: #2563eb;"></div>
+                        <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">Election</p>
+                    </button>
                 </div>
             </div>
 
-            <!-- Preview Section (Bottom on Mobile) -->
-            <div class="order-2 md:order-2 md:sticky md:top-24 z-20 px-4 md:px-0 pb-4">
+            <!-- 2. Upload Section (Second Priority) -->
+            <div class="order-2 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                    <i data-lucide="image" class="text-indigo-500" width="18"></i>
+                    2. Upload Photo
+                </h2>
+                <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-indigo-200 rounded-xl cursor-pointer bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 transition-colors">
+                    <div class="flex flex-col items-center justify-center">
+                        <i data-lucide="upload" class="w-6 h-6 mb-1 text-indigo-500"></i>
+                        <p class="text-xs text-gray-500 font-medium">Tap to upload image</p>
+                    </div>
+                    <input type="file" id="imageInput" class="hidden" accept="image/*" />
+                </label>
+            </div>
+
+            <!-- 3. Preview Section (Third Priority - but on Desktop stays right) -->
+            <div class="order-3 md:col-start-2 md:row-start-1 md:row-span-4 md:sticky md:top-24 z-20">
                 <div class="bg-white p-3 md:p-4 rounded-2xl shadow-lg border border-gray-200">
                     <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                        <!-- Canvas with dynamic touch-action -->
                         <canvas id="posterCanvas" class="w-full h-full object-contain" style="touch-action: auto;"></canvas>
                         
-                        <!-- Placeholder Text -->
                         <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div class="text-center p-6 opacity-40">
                                 <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
-                                <p class="text-sm">Tap "Upload" above to start</p>
+                                <p class="text-sm">Tap "Upload" to start</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Label for mobile -->
                 <div class="mt-4 text-center md:hidden text-gray-400 text-xs">
                     Generated Poster Preview
+                </div>
+            </div>
+
+            <!-- 4. Adjust Controls (Fourth Priority) -->
+            <div id="controlsSection" class="order-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hidden h-fit">
+                <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                    <i data-lucide="move" class="text-indigo-500" width="18"></i>
+                    3. Adjust Image
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="zoom-out" width="18" class="text-gray-400"></i>
+                        <input 
+                            type="range" 
+                            id="scaleInput"
+                            min="0.1" 
+                            max="3" 
+                            step="0.1" 
+                            value="1" 
+                            class="w-full h-8 bg-transparent cursor-pointer accent-indigo-600 touch-pan-x"
+                        />
+                        <i data-lucide="zoom-in" width="18" class="text-gray-400"></i>
+                    </div>
+                    <p class="text-xs text-center text-gray-400">
+                        Drag image on preview to move • Use slider to zoom
+                    </p>
+                    <button id="resetBtn" class="w-full py-2.5 text-sm text-indigo-600 bg-indigo-50 rounded-lg active:bg-indigo-100 flex items-center justify-center gap-2">
+                        <i data-lucide="refresh-cw" width="14"></i> Reset Position
+                    </button>
                 </div>
             </div>
 
@@ -146,17 +131,14 @@
     </div>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // State Variables
         let uploadedImage = null;
         let position = { x: 0, y: 0 };
         let scale = 1;
         let isDragging = false;
         let dragStart = { x: 0, y: 0 };
 
-        // DOM Elements
         const canvas = document.getElementById('posterCanvas');
         const ctx = canvas.getContext('2d');
         const imageInput = document.getElementById('imageInput');
@@ -168,33 +150,23 @@
         const placeholderText = document.getElementById('placeholderText');
         const controlsSection = document.getElementById('controlsSection');
 
-        // Constants
         const CANVAS_SIZE = 1000;
-        const FRAME_COLOR = "#2563eb"; // Election Blue
+        const FRAME_COLOR = "#2563eb"; 
 
-        // Initial Canvas Setup
         canvas.width = CANVAS_SIZE;
         canvas.height = CANVAS_SIZE;
 
-        // --- Functions ---
-
-        // 1. Draw Function
         function drawCanvas() {
-            // Clear Canvas
             ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-            // Background Fill
             ctx.fillStyle = "#f3f4f6";
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-            // --- CIRCULAR CLIPPING START ---
             ctx.save();
             ctx.beginPath();
             ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
             ctx.closePath();
             ctx.clip(); 
 
-            // Draw Image
             if (uploadedImage) {
                 ctx.save();
                 ctx.translate(CANVAS_SIZE / 2 + position.x, CANVAS_SIZE / 2 + position.y);
@@ -208,13 +180,10 @@
                 ctx.fillText("Upload Photo", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
             }
 
-            // Draw Overlay
             drawOverlay(ctx);
-
             ctx.restore(); 
         }
 
-        // 2. Overlay Function
         function drawOverlay(ctx) {
             const w = CANVAS_SIZE;
             const h = CANVAS_SIZE;
@@ -244,7 +213,6 @@
             ctx.restore();
         }
 
-        // 3. Image Upload
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -257,19 +225,15 @@
                         scale = 1;
                         scaleInput.value = 1;
                         
-                        // Update UI
                         placeholderText.style.display = 'none';
                         controlsSection.classList.remove('hidden');
                         
-                        // LOCK SCROLLING ON CANVAS ONLY AFTER IMAGE LOAD
                         canvas.style.touchAction = "none";
                         
-                        // Enable Desktop Button
                         desktopDownloadBtn.disabled = false;
                         desktopDownloadBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
                         desktopDownloadBtn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'shadow-md');
                         
-                        // Show Mobile Bar
                         mobileDownloadBar.classList.remove('translate-y-full');
                         
                         drawCanvas();
@@ -280,13 +244,11 @@
             }
         });
 
-        // 4. Zoom Control
         scaleInput.addEventListener('input', (e) => {
             scale = parseFloat(e.target.value);
             drawCanvas();
         });
 
-        // 5. Reset Button
         resetBtn.addEventListener('click', () => {
             position = { x: 0, y: 0 };
             scale = 1;
@@ -294,7 +256,6 @@
             drawCanvas();
         });
 
-        // 6. Download Function
         const downloadImage = () => {
             if (!uploadedImage) return;
             const link = document.createElement('a');
@@ -306,7 +267,6 @@
         desktopDownloadBtn.addEventListener('click', downloadImage);
         mobileDownloadBtn.addEventListener('click', downloadImage);
 
-        // 7. Pan / Drag Logic
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -329,7 +289,7 @@
 
         const onDrag = (e) => {
             if (!isDragging || !uploadedImage) return;
-            e.preventDefault(); // Stop scrolling only if dragging an image
+            e.preventDefault(); 
             const pos = getPos(e);
             
             const dx = pos.x - lastPos.x;
@@ -354,9 +314,7 @@
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
-        // Initial Draw
         drawCanvas();
-
     </script>
 </body>
 </html>
