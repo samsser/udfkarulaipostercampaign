@@ -2,68 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SocialWaves Poster Maker</title>
-    <!-- Tailwind CSS for Styling --> 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom styles if needed */
+        /* Prevent pull-to-refresh on mobile */
+        body {
+            overscroll-behavior-y: contain;
+        }
+        /* Lock canvas interactions */
         canvas {
-            touch-action: none; /* Prevent scrolling when touching canvas */
+            touch-action: none;
+        }
+        /* Hide scrollbar for cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans pb-24 md:pb-0">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm p-4 sticky top-0 z-10">
+    <header class="bg-white shadow-sm p-3 sticky top-0 z-30">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white">
-                    <i data-lucide="award"></i>
+                <div class="bg-indigo-600 p-1.5 rounded-lg text-white">
+                    <i data-lucide="award" width="20" height="20"></i>
                 </div>
-                <h1 class="text-xl font-bold text-gray-900">SocialWaves Maker</h1>
+                <h1 class="text-lg font-bold text-gray-900 leading-tight">SocialWaves<br><span class="text-xs text-indigo-600 font-normal">Poster Maker</span></h1>
             </div>
-            <button id="downloadBtn" disabled class="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors bg-gray-200 text-gray-400 cursor-not-allowed">
+            <!-- Desktop Download Button -->
+            <button id="desktopDownloadBtn" disabled class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors bg-gray-200 text-gray-400 cursor-not-allowed">
                 <i data-lucide="download" width="18"></i>
-                <span class="hidden sm:inline">Download Poster</span>
+                <span>Download</span>
             </button>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <main class="max-w-4xl mx-auto md:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           
-            <!-- Left Column: Controls -->
-            <div class="space-y-6 order-2 md:order-1">
+            <!-- Preview Section (Top on Mobile & Sticky) -->
+            <div class="order-1 md:order-2 sticky top-[60px] md:top-24 z-20 bg-gray-50 md:bg-transparent pt-2 md:pt-0 pb-2 px-2 md:px-0">
+                <div class="bg-white p-2 md:p-4 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-move touch-none border border-gray-100">
+                        <canvas id="posterCanvas" class="w-full h-full object-contain"></canvas>
+                        
+                        <!-- Placeholder Text -->
+                        <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="text-center p-6 opacity-40">
+                                <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
+                                <p class="text-sm">Tap "Upload" below</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Section (Scrolls underneath) -->
+            <div class="space-y-4 px-4 md:px-0 order-2 md:order-1 pb-8">
                 
                 <!-- 1. Upload Section -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <i data-lucide="image" class="text-indigo-500"></i>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                        <i data-lucide="image" class="text-indigo-500" width="18"></i>
                         1. Upload Photo
                     </h2>
-                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-indigo-200 rounded-xl cursor-pointer bg-indigo-50 hover:bg-indigo-100 transition-colors">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <i data-lucide="upload" class="w-8 h-8 mb-2 text-indigo-500"></i>
-                            <p class="text-sm text-gray-500 font-medium">Click to upload image</p>
+                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-indigo-200 rounded-xl cursor-pointer bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 transition-colors">
+                        <div class="flex flex-col items-center justify-center">
+                            <i data-lucide="upload" class="w-6 h-6 mb-1 text-indigo-500"></i>
+                            <p class="text-xs text-gray-500 font-medium">Tap to upload image</p>
                         </div>
                         <input type="file" id="imageInput" class="hidden" accept="image/*" />
                     </label>
                 </div>
 
                 <!-- 2. Controls Section (Hidden initially) -->
-                <div id="controlsSection" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hidden">
-                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <i data-lucide="move" class="text-indigo-500"></i>
+                <div id="controlsSection" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hidden">
+                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                        <i data-lucide="move" class="text-indigo-500" width="18"></i>
                         2. Adjust Image
                     </h2>
                     
                     <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <i data-lucide="zoom-out" size="20" class="text-gray-500"></i>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="zoom-out" width="18" class="text-gray-400"></i>
                             <input 
                                 type="range" 
                                 id="scaleInput"
@@ -71,61 +101,45 @@
                                 max="3" 
                                 step="0.1" 
                                 value="1" 
-                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                class="w-full h-8 bg-transparent cursor-pointer accent-indigo-600 touch-pan-x"
                             />
-                            <i data-lucide="zoom-in" size="20" class="text-gray-500"></i>
+                            <i data-lucide="zoom-in" width="18" class="text-gray-400"></i>
                         </div>
                         <p class="text-xs text-center text-gray-400">
-                            Drag the image on the preview to move it
+                            Drag image on preview to move • Use slider to zoom
                         </p>
-                        <button id="resetBtn" class="w-full py-2 text-sm text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 flex items-center justify-center gap-2">
+                        <button id="resetBtn" class="w-full py-2.5 text-sm text-indigo-600 bg-indigo-50 rounded-lg active:bg-indigo-100 flex items-center justify-center gap-2">
                             <i data-lucide="refresh-cw" width="14"></i> Reset Position
                         </button>
                     </div>
                 </div>
 
                 <!-- 3. Frame Selection -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <i data-lucide="smartphone" class="text-indigo-500"></i>
-                        3. Active Campaign
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
+                        <i data-lucide="smartphone" class="text-indigo-500" width="18"></i>
+                        3. Campaign
                     </h2>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-3 gap-2">
                         <!-- Only Election Campaign -->
                         <button class="p-2 rounded-xl border-2 transition-all border-indigo-600 bg-indigo-50">
-                            <div class="w-full h-16 rounded-md mb-2" style="background-color: #2563eb;"></div>
-                            <p class="text-xs font-medium text-center truncate">Election</p>
+                            <div class="w-full h-10 md:h-12 rounded-md mb-1.5" style="background-color: #2563eb;"></div>
+                            <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">Election</p>
                         </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Preview -->
-            <div class="order-1 md:order-2">
-                <div class="sticky top-24">
-                    <div class="bg-white p-4 rounded-3xl shadow-lg border border-gray-200">
-                        <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-move touch-none">
-                            <canvas id="posterCanvas" class="w-full h-full object-contain"></canvas>
-                            
-                            <!-- Placeholder Text -->
-                            <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div class="text-center p-6 opacity-40">
-                                    <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
-                                    <p>Preview will appear here</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4 text-center">
-                            <p class="text-sm font-medium text-gray-500">
-                                Generated Poster Preview (WhatsApp DP Style)
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
     </main>
+
+    <!-- Mobile Fixed Bottom Bar -->
+    <div id="mobileDownloadBar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 md:hidden transition-transform translate-y-full">
+        <button id="mobileDownloadBtn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3.5 rounded-xl font-bold text-lg shadow-lg active:scale-95 transition-transform">
+            <i data-lucide="download"></i>
+            Download Poster
+        </button>
+    </div>
 
     <script>
         // Initialize Icons
@@ -143,7 +157,9 @@
         const ctx = canvas.getContext('2d');
         const imageInput = document.getElementById('imageInput');
         const scaleInput = document.getElementById('scaleInput');
-        const downloadBtn = document.getElementById('downloadBtn');
+        const desktopDownloadBtn = document.getElementById('desktopDownloadBtn');
+        const mobileDownloadBar = document.getElementById('mobileDownloadBar');
+        const mobileDownloadBtn = document.getElementById('mobileDownloadBtn');
         const resetBtn = document.getElementById('resetBtn');
         const placeholderText = document.getElementById('placeholderText');
         const controlsSection = document.getElementById('controlsSection');
@@ -168,11 +184,11 @@
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
             // --- CIRCULAR CLIPPING START ---
-            ctx.save(); // Save state before clipping
+            ctx.save();
             ctx.beginPath();
             ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
             ctx.closePath();
-            ctx.clip(); // Restrict drawing to circle
+            ctx.clip(); 
 
             // Draw Image
             if (uploadedImage) {
@@ -182,17 +198,16 @@
                 ctx.drawImage(uploadedImage, -uploadedImage.width / 2, -uploadedImage.height / 2);
                 ctx.restore();
             } else {
-                 // Draw Text if no image
                 ctx.fillStyle = "#9ca3af";
                 ctx.font = "bold 30px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText("Upload a photo to start", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+                ctx.fillText("Upload Photo", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
             }
 
-            // Draw Overlay (Gradient & Border)
+            // Draw Overlay
             drawOverlay(ctx);
 
-            ctx.restore(); // Restore state (remove clipping for future non-clipped drawing if needed)
+            ctx.restore(); 
         }
 
         // 2. Overlay Function
@@ -201,7 +216,6 @@
             const h = CANVAS_SIZE;
             const borderSize = 40;
 
-            // Gradient Overlay
             const gradient = ctx.createLinearGradient(0, h/2, 0, h);
             gradient.addColorStop(0, "transparent");
             gradient.addColorStop(0.6, FRAME_COLOR);
@@ -210,14 +224,12 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, w, h);
 
-            // Circular Border
             ctx.beginPath();
             ctx.arc(w / 2, h / 2, (w / 2) - (borderSize / 2), 0, Math.PI * 2);
             ctx.lineWidth = borderSize;
             ctx.strokeStyle = FRAME_COLOR;
             ctx.stroke();
 
-            // Text (#SocialWaves)
             ctx.save();
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
@@ -237,7 +249,6 @@
                     const img = new Image();
                     img.onload = () => {
                         uploadedImage = img;
-                        // Reset defaults
                         position = { x: 0, y: 0 };
                         scale = 1;
                         scaleInput.value = 1;
@@ -245,9 +256,14 @@
                         // Update UI
                         placeholderText.style.display = 'none';
                         controlsSection.classList.remove('hidden');
-                        downloadBtn.disabled = false;
-                        downloadBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
-                        downloadBtn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'shadow-md');
+                        
+                        // Enable Desktop Button
+                        desktopDownloadBtn.disabled = false;
+                        desktopDownloadBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+                        desktopDownloadBtn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'shadow-md');
+                        
+                        // Show Mobile Bar
+                        mobileDownloadBar.classList.remove('translate-y-full');
                         
                         drawCanvas();
                     };
@@ -272,44 +288,54 @@
         });
 
         // 6. Download Function
-        downloadBtn.addEventListener('click', () => {
+        const downloadImage = () => {
             if (!uploadedImage) return;
             const link = document.createElement('a');
             link.download = 'my-election-poster.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
-        });
+        };
 
-        // 7. Pan / Drag Logic (Mouse & Touch)
+        desktopDownloadBtn.addEventListener('click', downloadImage);
+        mobileDownloadBtn.addEventListener('click', downloadImage);
+
+        // 7. Pan / Drag Logic
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            // Scale factor between CSS pixels and Canvas pixels
+            // Calculate scale based on displayed size vs actual canvas size
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
 
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Adjust mouse position to canvas scale logic NOT needed for dragging relative movement
-            // We just need raw screen movement to translate to canvas movement
-            return { x: clientX, y: clientY };
+            // We need to scale the movement to match the canvas resolution
+            return { x: clientX * scaleX, y: clientY * scaleY };
         }
+
+        // Improved Drag Logic for Mobile Smoothness
+        let lastPos = { x: 0, y: 0 };
 
         const startDrag = (e) => {
             if (!uploadedImage) return;
             isDragging = true;
             const pos = getPos(e);
-            dragStart = { x: pos.x - position.x, y: pos.y - position.y };
+            lastPos = pos;
         };
 
         const onDrag = (e) => {
             if (!isDragging) return;
-            e.preventDefault(); // Prevent scrolling on touch
+            e.preventDefault(); // Stop scrolling
             const pos = getPos(e);
-            position = {
-                x: pos.x - dragStart.x,
-                y: pos.y - dragStart.y
-            };
+            
+            // Calculate delta
+            const dx = pos.x - lastPos.x;
+            const dy = pos.y - lastPos.y;
+
+            position.x += dx;
+            position.y += dy;
+            
+            lastPos = pos;
             drawCanvas();
         };
 
@@ -317,7 +343,6 @@
             isDragging = false;
         };
 
-        // Event Listeners for Dragging
         canvas.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', onDrag);
         window.addEventListener('mouseup', stopDrag);
@@ -326,7 +351,6 @@
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
-        // Initial Draw
         drawCanvas();
 
     </script>
