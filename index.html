@@ -49,8 +49,8 @@
     <main class="max-w-4xl mx-auto md:p-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           
-            <!-- Preview Section (Top on Mobile & Sticky) -->
-            <div class="order-1 md:order-2 sticky top-[60px] md:top-24 z-20 bg-gray-50 md:bg-transparent pt-2 md:pt-0 pb-2 px-2 md:px-0">
+            <!-- Preview Section (Moved to Bottom on Mobile) -->
+            <div class="order-2 md:order-2 md:sticky md:top-24 z-20 bg-gray-50 md:bg-transparent pt-2 md:pt-0 pb-2 px-2 md:px-0">
                 <div class="bg-white p-2 md:p-4 rounded-2xl shadow-lg border border-gray-200">
                     <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-move touch-none border border-gray-100">
                         <canvas id="posterCanvas" class="w-full h-full object-contain"></canvas>
@@ -59,15 +59,21 @@
                         <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div class="text-center p-6 opacity-40">
                                 <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
-                                <p class="text-sm">Tap "Upload" below</p>
+                                <p class="text-sm">Tap "Upload" above</p>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Label for mobile -->
+                <div class="mt-4 text-center md:hidden">
+                    <p class="text-sm font-medium text-gray-500">
+                        Generated Poster Preview
+                    </p>
+                </div>
             </div>
 
-            <!-- Controls Section (Scrolls underneath) -->
-            <div class="space-y-4 px-4 md:px-0 order-2 md:order-1 pb-8">
+            <!-- Controls Section (Moved to Top on Mobile) -->
+            <div class="space-y-4 px-4 md:px-0 order-1 md:order-1 pb-8">
                 
                 <!-- 1. Upload Section -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
