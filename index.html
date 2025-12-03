@@ -16,7 +16,6 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* Style for range slider to look better on overlay */
         input[type=range] {
             height: 4px;
             border-radius: 2px;
@@ -34,7 +33,6 @@
                 </div>
                 <h1 class="text-lg font-bold text-gray-900 leading-tight">SocialWaves<br><span class="text-xs text-indigo-600 font-normal">Poster Maker</span></h1>
             </div>
-            <!-- Desktop Download Button -->
             <button id="desktopDownloadBtn" disabled class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors bg-gray-200 text-gray-400 cursor-not-allowed">
                 <i data-lucide="download" width="18"></i>
                 <span>Download</span>
@@ -43,24 +41,28 @@
     </header>
 
     <main class="max-w-4xl mx-auto md:p-8 pt-4">
-        <!-- Grid Container -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 px-4 md:px-0">
           
-            <!-- 1. Campaign Selection (First Priority) -->
+            <!-- 1. Campaign Selection -->
             <div class="order-1 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit">
                 <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
                     <i data-lucide="smartphone" class="text-indigo-500" width="18"></i>
                     1. Choose Campaign
                 </h2>
                 <div class="grid grid-cols-3 gap-2">
+                    <!-- Updated Button with Image Thumbnail -->
                     <button class="p-2 rounded-xl border-2 transition-all border-indigo-600 bg-indigo-50">
-                        <div class="w-full h-10 md:h-12 rounded-md mb-1.5" style="background-color: #2563eb;"></div>
-                        <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">Election</p>
+                        <img 
+                            src="https://raw.githubusercontent.com/samsser/udfkarulaipostercampaign/77bad7ec64cd0e7b4868dc28c43b528432da2949/1.png" 
+                            class="w-full h-10 md:h-12 object-contain rounded-md mb-1.5" 
+                            alt="UDF Frame"
+                        >
+                        <p class="text-[10px] uppercase tracking-wide font-bold text-center truncate text-indigo-900">UDF Karulai</p>
                     </button>
                 </div>
             </div>
 
-            <!-- 2. Upload Section (Second Priority) -->
+            <!-- 2. Upload Section -->
             <div class="order-2 bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit">
                 <h2 class="text-base font-semibold mb-3 flex items-center gap-2">
                     <i data-lucide="image" class="text-indigo-500" width="18"></i>
@@ -75,13 +77,12 @@
                 </label>
             </div>
 
-            <!-- 3. Preview Section with INTERNAL CONTROLS -->
+            <!-- 3. Preview Section -->
             <div class="order-3 md:col-start-2 md:row-start-1 md:row-span-4 md:sticky md:top-24 z-20">
                 <div class="bg-white p-3 md:p-4 rounded-2xl shadow-lg border border-gray-200">
                     <div class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100 group">
                         <canvas id="posterCanvas" class="w-full h-full object-contain" style="touch-action: auto;"></canvas>
                         
-                        <!-- Placeholder Text -->
                         <div id="placeholderText" class="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div class="text-center p-6 opacity-40">
                                 <i data-lucide="image" width="48" class="mx-auto mb-2"></i>
@@ -89,10 +90,9 @@
                             </div>
                         </div>
 
-                        <!-- INTERNAL CONTROLS OVERLAY (More Compact & Transparent) -->
+                        <!-- Internal Controls -->
                         <div id="internalControls" class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-white/70 backdrop-blur-md border-t border-white/20 hidden transition-all duration-300">
                             <div class="flex items-center justify-between gap-3">
-                                <!-- Zoom Controls -->
                                 <div class="flex items-center gap-2 flex-1">
                                     <i data-lucide="zoom-out" width="14" class="text-gray-600"></i>
                                     <input 
@@ -106,8 +106,6 @@
                                     />
                                     <i data-lucide="zoom-in" width="14" class="text-gray-600"></i>
                                 </div>
-                                
-                                <!-- Reset Button -->
                                 <button id="resetBtn" class="p-1.5 bg-white/80 text-indigo-600 rounded-full shadow-sm hover:bg-white active:bg-indigo-50 transition-colors" title="Reset Position">
                                     <i data-lucide="refresh-cw" width="14" height="14"></i>
                                 </button>
@@ -124,7 +122,6 @@
         </div>
     </main>
 
-    <!-- Mobile Fixed Bottom Bar -->
     <div id="mobileDownloadBar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 md:hidden transition-transform translate-y-full">
         <button id="mobileDownloadBtn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3.5 rounded-xl font-bold text-lg shadow-lg active:scale-95 transition-transform">
             <i data-lucide="download"></i>
@@ -141,6 +138,18 @@
         let isDragging = false;
         let dragStart = { x: 0, y: 0 };
 
+        // Frame Configuration
+        // Using 'raw.githubusercontent.com' to serve the image directly
+        const FRAME_URL = "https://raw.githubusercontent.com/samsser/udfkarulaipostercampaign/77bad7ec64cd0e7b4868dc28c43b528432da2949/1.png";
+        
+        // Preload Frame Image
+        const frameImage = new Image();
+        frameImage.crossOrigin = "anonymous"; // Important for canvas export
+        frameImage.src = FRAME_URL;
+        frameImage.onload = () => {
+            if(uploadedImage) drawCanvas(); // Redraw if user image is already there
+        };
+
         const canvas = document.getElementById('posterCanvas');
         const ctx = canvas.getContext('2d');
         const imageInput = document.getElementById('imageInput');
@@ -153,7 +162,6 @@
         const internalControls = document.getElementById('internalControls');
 
         const CANVAS_SIZE = 1000;
-        const FRAME_COLOR = "#2563eb"; 
 
         canvas.width = CANVAS_SIZE;
         canvas.height = CANVAS_SIZE;
@@ -163,12 +171,14 @@
             ctx.fillStyle = "#f3f4f6";
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
+            // 1. Draw Circular Mask for User Photo
             ctx.save();
             ctx.beginPath();
             ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE / 2, 0, Math.PI * 2);
             ctx.closePath();
             ctx.clip(); 
 
+            // 2. Draw User Photo
             if (uploadedImage) {
                 ctx.save();
                 ctx.translate(CANVAS_SIZE / 2 + position.x, CANVAS_SIZE / 2 + position.y);
@@ -181,38 +191,13 @@
                 ctx.textAlign = "center";
                 ctx.fillText("Upload Photo", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
             }
+            ctx.restore(); // Remove clip so frame draws fully (if needed) or keep if frame is also circular
 
-            drawOverlay(ctx);
-            ctx.restore(); 
-        }
-
-        function drawOverlay(ctx) {
-            const w = CANVAS_SIZE;
-            const h = CANVAS_SIZE;
-            const borderSize = 40;
-
-            const gradient = ctx.createLinearGradient(0, h/2, 0, h);
-            gradient.addColorStop(0, "transparent");
-            gradient.addColorStop(0.6, FRAME_COLOR);
-            gradient.addColorStop(1, "black");
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, w, h);
-
-            ctx.beginPath();
-            ctx.arc(w / 2, h / 2, (w / 2) - (borderSize / 2), 0, Math.PI * 2);
-            ctx.lineWidth = borderSize;
-            ctx.strokeStyle = FRAME_COLOR;
-            ctx.stroke();
-
-            ctx.save();
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.font = "bold 30px sans-serif";
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 4;
-            ctx.fillText("#SocialWaves", w / 2, h - 100);
-            ctx.restore();
+            // 3. Draw Frame Overlay (The PNG from GitHub)
+            // We draw this ON TOP of the clipped user photo
+            if (frameImage.complete && frameImage.naturalHeight !== 0) {
+                ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            }
         }
 
         imageInput.addEventListener('change', (e) => {
@@ -228,10 +213,7 @@
                         scaleInput.value = 1;
                         
                         placeholderText.style.display = 'none';
-                        
-                        // Show Internal Controls Overlay
                         internalControls.classList.remove('hidden');
-                        
                         canvas.style.touchAction = "none";
                         
                         desktopDownloadBtn.disabled = false;
@@ -263,7 +245,7 @@
         const downloadImage = () => {
             if (!uploadedImage) return;
             const link = document.createElement('a');
-            link.download = 'my-election-poster.png';
+            link.download = 'my-udf-poster.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         };
@@ -318,6 +300,7 @@
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
+        // Initial draw (in case frame loads fast)
         drawCanvas();
     </script>
 </body>
